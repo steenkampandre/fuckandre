@@ -1,0 +1,304 @@
+<style type="text/css">
+  body, html {
+    margin:0;
+    transform-style:preserve-3d;
+    perspective:1px;
+  }
+
+  .ad-wrapper {
+    background:radial-gradient(ellipse at 0% 0%, rgba(215, 109, 7, 1) 0%, rgba(248, 228, 157, 1) 50%, rgba(248, 228, 157, 0) 100%),
+      radial-gradient(ellipse at 0% 100%, rgba(215, 109, 7, 1) 100%, rgba(248, 228, 157, 1) 80%, rgba(248, 228, 157, 0) 0%),
+      radial-gradient(ellipse at 100% 0%, rgba(215, 109, 7, 1) 0%, rgba(248, 228, 157, 1) 50%, rgba(248, 228, 157, 0) 30%),
+      radial-gradient(ellipse at 50% 50%, rgba(215, 109, 7, 1) 0%, rgba(248, 228, 157, 1) 30%, rgba(248, 228, 157, 0) 80%),
+      radial-gradient(ellipse at 50% 100%, rgba(215, 109, 7, 1) 100%, rgba(248, 228, 157, 1) 80%, rgba(248, 228, 157, 0) 0%);
+    box-sizing:border-box;
+    overflow:hidden
+  }
+
+@keyframes blink {
+    0% {
+      filter:sepia(100%);
+      -webkit-filter:sepia(100%)
+    }
+
+    25% {
+      filter:sepia(0%);
+      -webkit-filter:sepia(0%)
+    }
+
+    50% {
+      filter:sepia(100%);
+      -webkit-filter:sepia(100%)
+    }
+  }
+
+  #Hive {
+    background:radial-gradient(ellipse at 0% 0%, rgba(215, 109, 7, 1) 0%, rgba(248, 228, 157, 1) 50%, rgba(248, 228, 157, 0) 100%),
+      radial-gradient(ellipse at 0% 100%, rgba(215, 109, 7, 1) 100%, rgba(248, 228, 157, 1) 80%, rgba(248, 228, 157, 0) 0%),
+      radial-gradient(ellipse at 100% 0%, rgba(215, 109, 7, 1) 0%, rgba(248, 228, 157, 1) 50%, rgba(248, 228, 157, 0) 30%),
+      radial-gradient(ellipse at 50% 50%, rgba(215, 109, 7, 1) 0%, rgba(248, 228, 157, 1) 30%, rgba(248, 228, 157, 0) 80%),
+      radial-gradient(ellipse at 50% 100%, rgba(215, 109, 7, 1) 100%, rgba(248, 228, 157, 1) 80%, rgba(248, 228, 157, 0) 0%);
+    box-sizing:border-box;
+    overflow:hidden;
+    transform-style:preserve-3d;
+    perspective:1px
+  }
+
+  #Hive.active:hover .honey, #Hive.fixed .honey { 
+    transition:all 250ms linear;
+    filter:sepia(0%) !important;
+    -webkit-filter:sepia(0%) !important;
+    animation-name:n !important
+  }
+
+  #Hive:hover .hive-cell-wax, #Hive.fixed .hive-cell-wax {
+    opacity:1 !important
+  }
+
+  #Hive .hive-cell {
+    float:left;
+    width:10vw;
+    height:12vw;
+    overflow:hidden;
+    transform:rotate(120deg);
+    display:inline-block
+  }
+
+  #Hive .hive-cell-cap {
+    overflow:hidden;
+    width:100%;
+    height:100%;
+    transform:rotate(-60deg);
+  }
+
+  #Hive .hive-cell-wax {
+    position:relative;
+    width:100%;
+    height:100%;
+    transition:opacity 250ms linear;
+    cursor:pointer;
+    overflow: hidden;
+    transform:rotate(-60deg);
+    opacity:0.7;
+    background:radial-gradient(ellipse at center, rgba(215, 109, 7, 0.7) 0%, rgba(248, 228, 157, 0) 100%);
+  }
+
+  #Hive .hive-cell-wax:hover, #Hive .hive-cell-wax.active {
+    opacity:1;
+  }
+
+  #Hive .hive-cell:nth-of-type(odd) {
+    margin:9.5vw -4.5vw;
+  }
+
+  #Hive .hive-comb {
+    width:120vw;
+    height:22vw;
+    overflow:hidden;
+    margin:-5vw -0.5vw;
+  }
+
+  #Hive .hive-comb:nth-of-type(even) {
+    margin:2vw -0.5vw
+  }
+
+  #Hive .hive-cell-wax div {
+    content: "";
+    position: absolute;
+    background-position:50% 50%;
+    background-attachment:fixed;
+    background-repeat:no-repeat;
+    background-size:cover;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    opacity:0;
+    filter:sepia(100%);
+    -webkit-filter:sepia(100%);
+    transition: background-image 500ms ease-in, opacity 500ms ease-in;
+  }
+
+  #Hive.buzz .honey {
+    opacity:1
+  }
+
+  #Hive.buzz .honey:not(:hover) {
+    animation-name:blink;
+    animation-duration:2000ms;
+    animation-iteration-count:infinite;
+    animation-fill-mode: forwards
+  }
+
+  #Hive.buzz .honey:hover {
+    background-image: none !important;
+    transition-delay:0 !important;
+    filter:sepia(0) !important;
+    -webkit-filter:sepia(0) !important
+  }
+</style>
+
+<style id="HiveBG"></style> 
+
+<div class="ad-wrapper"></div>
+
+
+<script>
+function Hive(name) {
+  var foundation = document.createElement('div'),
+    fixed = false, animating = false;
+
+  var hiveFrame,
+    cells = [],
+    colonyStatus = {
+      tumblr: false,
+      twitter: false,
+      instagram: false
+    };
+
+  var HiveStyle = document.querySelector('style#HiveBG');
+
+  function createCell(data){
+    var rand = Math.floor(Math.random()* 3000),
+      Cell = document.createElement('div'),
+      cap = document.createElement('div'),
+      wax = document.createElement('div'),
+      honey = document.createElement('div');
+
+    Cell.classList.add('hive-cell');
+    cap.classList.add('hive-cell-cap');
+    wax.classList.add('hive-cell-wax');
+
+    if(data.active)
+      wax.classList.add('active');
+
+    honey.classList.add(data.class);
+    honey.style.backgroundImage = 'url(' + data.image + ')';
+    honey.style.transitionDelay = rand+ 'ms';
+    honey.style.animationDelay = (2*rand)+ 'ms';
+    honey.onclick = clickCell;
+    honey.dataset.bg = data.image;
+
+    // honey.addEventListener('mouseenter', function(){
+    //   if(!fixed && !animating) {
+    //     animating = true;
+    //     foundation.classList.add('active');
+    //     HiveStyle.innerHTML = '#Hive:not(.fixed):hover .honey:not(:hover) { background-image:url('+data.image+') !important }';
+      
+    //     window.setTimeout(function(){
+    //       if(!fixed)
+    //         HiveStyle.innerHTML = '';
+
+    //       window.setTimeout(function(){
+    //         animating = false;
+    //       }, 3000);
+          
+    //     }, 5000);
+
+    //   }
+    // });
+
+    Cell.appendChild(cap);
+    cap.appendChild(wax);
+    wax.appendChild(honey);
+
+    return Cell;
+  }
+
+  var clickTimeout;
+
+  function clickCell(){
+    if(!fixed){
+      clearTimeout(clickTimeout);
+      
+      fixed = true;
+      foundation.classList.remove('active');
+      foundation.classList.add('fixed');
+      HiveStyle.innerHTML = '#Hive .honey { background-image:url('+this.dataset.bg+') !important }';
+
+      clickTimeout = setTimeout(function(){
+        fixed = false;
+        foundation.classList.remove('fixed');
+        HiveStyle.innerHTML = '';
+      }, 5000);
+    }
+  }
+
+  function createComb(){
+    var comb = [];
+    for ( var x = 0, limit = cells.length; x < limit; x++ )
+      comb.push( createCell(cells[x]) );
+    return comb;
+  }
+
+  function renderComb(Comb){
+    foundation.id = 'Hive';
+    hiveFrame.appendChild(foundation);
+
+    var temp = [];
+    for ( var x = 0, limit = Comb.length; x < limit; x++ ) {
+      temp.push( Comb[x] );
+      if(temp.length == 20) {
+        var row = document.createElement('div');
+          row.classList.add('hive-comb');
+
+        for(var i = 0; i < temp.length; i++){
+          row.appendChild(temp[i]);
+        }
+
+        foundation.appendChild(row);
+        temp = [];
+      }
+    } 
+
+    window.setTimeout(function(){
+      foundation.classList.add('buzz');
+    }, 50);
+  }
+
+  function renderHive(){
+    var Comb = createComb();
+     
+     for ( var x = 0, limit = 30; x < limit; x++ )
+      Comb = Comb.concat( createComb() );
+      
+
+    renderComb(Comb);
+  }
+
+  function pollinate(src){
+    var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = src;
+    document.getElementsByTagName('head')[0].appendChild(script);
+  }
+
+
+  this.init = function(target){
+    hiveFrame = target;
+
+    var imgs = [
+      'http://files.mic.com/ads/tumblr/hex-300x300-01.png',
+      'http://files.mic.com/ads/tumblr/hex-300x300-02.png',
+      'http://files.mic.com/ads/tumblr/hex-300x300-03.png',
+      'http://files.mic.com/ads/tumblr/hex-300x300-04.png',
+      'http://files.mic.com/ads/tumblr/hex-300x300-05.png',
+      'http://files.mic.com/ads/tumblr/hex-300x300-06.png'
+    ];
+
+    var temp = [];
+    for ( var x = 0, limit = imgs.length; x < limit; x++ ) {
+      temp.push({
+        image: imgs[x],
+        class: 'honey',
+        active: false
+      });
+    }
+    cells = cells.concat(temp);
+    renderHive();
+  }
+};
+
+var hive = new Hive('hive');
+  hive.init( document.querySelector('.ad-wrapper') );
+</script>
